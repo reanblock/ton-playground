@@ -1,0 +1,69 @@
+#include "imports/stdlib.fc";
+
+{-
+
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  Contract contains intentional bugs, do not use in production
+
+-}
+
+;; storage#_ addr1:MsgAddress addr2:MsgAddress = Storage;
+
+global slice addr1;
+global slice addr2;
+global int fund_balance;
+
+() load_data () impure {
+  slice ds = get_data().begin_parse();
+  addr1 = ds~load_msg_addr();
+  addr2 = ds~load_msg_addr();
+  fund_balance = ds~load_coins();
+}
+
+() update_fund_balance(int new_fund_balance) impure {
+   set_data( 
+       begin_cell() 
+        .store_slice(addr1) ;; just store the same global addresss back
+        .store_slice(addr2)
+        .store_coins(new_fund_balance)
+        .end_cell() 
+   );
+}
+
+{-
+    Note the bug is this authorize which is defined without the impure modifier
+    The FunC compiler will simply remove this function and no authorization check will take place!
+
+    If you add the 'impure' modifer and run the test that is skipped it should pass!
+-} 
+() authorize (sender) inline { 
+  throw_unless(187, equal_slice_bits(sender, addr1) | equal_slice_bits(sender, addr2));
+}
+
+() recv_internal (in_msg_full, in_msg_body) {
+    if (in_msg_body.slice_empty?()) { ;; ignore empty messages
+        return ();
+    }
+    slice cs = in_msg_full.begin_parse();
+    int flags = cs~load_uint(4);
+
+    if (flags & 1) { ;; ignore all bounced messages
+        return ();
+    }
+    slice sender_address = cs~load_msg_addr();
+    
+    load_data();
+    authorize(sender_address);
+
+    int withdraw? = in_msg_body~load_int(1);
+    if(withdraw?) {
+        fund_balance = 0;
+        update_fund_balance(fund_balance);
+    }
+}
+
+int get_fund_balance() method_id {
+    load_data();
+   
+    return fund_balance;
+}

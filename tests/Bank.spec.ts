@@ -52,15 +52,32 @@ describe('Bank', () => {
         const senderAccountBalance1 = await bank.getUserBalance(deployer.address);
         expect(senderAccountBalance1).toBe(toNano(100) - fee);
 
-        await bank.sendDeposit(deployer.getSender(), toNano(50));
+        const sendResult= await bank.sendDeposit(deployer.getSender(), toNano(50));
        
         const senderAccountBalance2 = await bank.getUserBalance(deployer.address);
         expect(senderAccountBalance2).toBe(senderAccountBalance1 + (toNano(50) - fee));
 
-        // expect(sendResult.transactions).toHaveTransaction({
-        //     from: deployer.address,
-        //     to: bank.address,
-        //     success: true
-        // });
+        expect(sendResult.transactions).toHaveTransaction({
+            from: deployer.address,
+            to: bank.address,
+            success: true
+        });
+    });
+
+    it("should deposit and then widthraw toncoin from depositors bank account", async () => {
+        await bank.sendDeposit(deployer.getSender(), toNano(100));
+        const depositAmount = toNano(100) - fee;
+        const withdrawAmount = toNano(70); // no fee to withdraw
+        
+        const sendResult = await bank.sendWithdraw(deployer.getSender(), toNano(0.01), toNano(70));
+        
+        const senderAccountBalanceAfter = await bank.getUserBalance(deployer.address);
+        expect(senderAccountBalanceAfter).toBe(depositAmount - withdrawAmount);
+
+        expect(sendResult.transactions).toHaveTransaction({
+            from: deployer.address,
+            to: bank.address,
+            success: true
+        });
     });
 });

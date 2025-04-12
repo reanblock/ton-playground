@@ -4,7 +4,6 @@ export type BankConfig = {
     address: Address
 };
 
-
 export function bankConfigToCell(config: BankConfig): Cell {
     // Create a dictionary with direct coin serialization (no nested cells)
     const accounts = Dictionary.empty(
@@ -57,11 +56,23 @@ export class Bank implements Contract {
             sendMode: SendMode.PAY_GAS_SEPARATELY, // specifies that gas costs will be covered separately from the message value
             body: beginCell()
                     .storeInt(0, 32) // opcode zero for deposit action
-                    .storeInt(9090909, 64) // queryid zero for deposit action
+                    .storeInt(999999, 64) // queryid can be anything 
                     .endCell()
         })
     }
 
+    async sendWithdraw(provider: ContractProvider, via: Sender, value: bigint, amount: bigint) {
+        await provider.internal(via, {
+            value, // the amount of TON coins
+            sendMode: SendMode.PAY_GAS_SEPARATELY, // specifies that gas costs will be covered separately from the message value
+            body: beginCell()
+                    .storeInt(1, 32) // opcode one for withdraw action
+                    .storeInt(999999, 64) // queryid can be anything 
+                    .storeCoins(amount) // amount requested to withdraw
+                    .endCell()
+        })
+    }
+    
     async getUserBalance(provider: ContractProvider, address: Address) {
         const addressHash = BigInt('0x' + address.hash.toString('hex'));
         const result = await provider.get('get_user_balance', [{ type: "int", value: addressHash }]);

@@ -40,25 +40,14 @@ describe('SimpleCounter', () => {
         });
     });
 
-    it('should deploy', async () => {
-        // the check is done inside beforeEach
-        // blockchain and simpleCounter are ready to use
-    });
-
     it('should increase counter', async () => {
         const increaseTimes = 3;
         for (let i = 0; i < increaseTimes; i++) {
-            // console.log(`increase ${i + 1}/${increaseTimes}`);
-
             const increaser = await blockchain.treasury('increaser' + i);
 
             const counterBefore = await simpleCounter.getCounter();
 
-            // console.log('counter before increasing', counterBefore);
-
             const increaseBy = Math.floor(Math.random() * 100);
-
-            // console.log('increasing by', increaseBy);
 
             const increaseResult = await simpleCounter.sendIncrease(increaser.getSender(), {
                 increaseBy,
@@ -72,8 +61,6 @@ describe('SimpleCounter', () => {
             });
 
             const counterAfter = await simpleCounter.getCounter();
-
-            // console.log('counter after increasing', counterAfter);
 
             expect(counterAfter).toBe(counterBefore + increaseBy);
         }

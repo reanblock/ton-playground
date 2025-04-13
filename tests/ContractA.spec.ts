@@ -24,7 +24,7 @@ describe('ContractA', () => {
         deployer = await blockchain.treasury('deployer');
 
         // deploy contractB first
-        contractB = blockchain.openContract(ContractB.createFromConfig({counter: 0}, contractBcode));
+        contractB = blockchain.openContract(ContractB.createFromConfig({callCounter: 0}, contractBcode));
         const deployContractBResult = await contractB.sendDeploy(deployer.getSender(), toNano('0.05'));
 
         // deploy contractA with 100 TON balance and reference contractB
@@ -40,6 +40,8 @@ describe('ContractA', () => {
     });
 
     it('should send a message from A -> B', async () => {
+        const counterBefore = await contractB.getCallCounter();
+
         // send message to transafer 10 TON to contract B
         const sendMessageAtoBResult = await contractA.sendMessageAtoB(deployer.getSender(), toNano(0.01), toNano(10));
 
@@ -50,5 +52,10 @@ describe('ContractA', () => {
             deploy: false,
             success: true,
         });
+
+        const counterAfter = await contractB.getCallCounter();
+
+        // expect the `call_counter` in contract b to have incremented
+        expect(counterAfter).toBe(counterBefore + 1);
     });
 });

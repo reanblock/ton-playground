@@ -18,7 +18,7 @@ describe('ContractB', () => {
     beforeEach(async () => {
         blockchain = await Blockchain.create();
 
-        contractB = blockchain.openContract(ContractB.createFromConfig({}, code));
+        contractB = blockchain.openContract(ContractB.createFromConfig({callCounter: 0}, code));
 
         deployer = await blockchain.treasury('deployer');
 

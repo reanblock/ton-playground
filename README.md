@@ -3,16 +3,26 @@
 Play carefully! Used to test TON smart contracts in FunC and Tact for security vulnerabilties.
 
 - To create a new contract run `npx blueprint create ContractName` and you can choose FunC or Tact in the wizard.
-- To run a specific test run `npx blueprint test ContractName` 
 - To build a specific contract run `npx blueprint build ContractName`
 
 **NOTE** it appears the Tact contracts need to be manually built after changing the code and before running the test.
 
+## Tests
+
+- To run a specific test run `npx blueprint test ContractName` 
+- To run tests in verbose mode use: `npx blueprint test` and in basic mode use: `npx jest` 
+- When runnin all the tests sometimes the `RawReserve` test will fail.
+
 ## TODO
 
-- Simple Messages A -> B
-- Complex Messages
+- Bounced Messages
+- Complex Messages A -> B -> C -> A
+- accept_message()
+- throw()
 - Gas monitoring
+- Continue Hack Challenges 
+- Jettons
+- Contract Upgrades
 
 ## Project structure
 

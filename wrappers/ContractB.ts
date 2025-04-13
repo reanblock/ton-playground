@@ -1,9 +1,9 @@
 import { Address, beginCell, Cell, Contract, contractAddress, ContractProvider, Sender, SendMode } from '@ton/core';
 
-export type ContractBConfig = {counter: number;};
+export type ContractBConfig = {callCounter: number;};
 
 export function contractBConfigToCell(config: ContractBConfig): Cell {
-    return beginCell().storeUint(config.counter, 32).endCell();
+    return beginCell().storeUint(config.callCounter, 32).endCell();
 }
 
 export class ContractB implements Contract {
@@ -25,5 +25,10 @@ export class ContractB implements Contract {
             sendMode: SendMode.PAY_GAS_SEPARATELY,
             body: beginCell().endCell(),
         });
+    }
+
+    async getCallCounter(provider: ContractProvider) {
+        const result = await provider.get('get_call_counter', []);
+        return result.stack.readNumber();
     }
 }

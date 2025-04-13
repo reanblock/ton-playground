@@ -8,6 +8,13 @@ Play carefully! Used to test TON smart contracts in FunC and Tact for security v
 
 **NOTE** it appears the Tact contracts need to be manually built after changing the code and before running the test.
 
+## TODO
+
+- `raw_reserve`
+- Simple Messages
+- Complex Messages
+- Gas monitoring
+
 ## Project structure
 
 -   `contracts` - source code of all the smart contracts of the project and their dependencies.

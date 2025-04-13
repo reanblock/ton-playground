@@ -53,8 +53,11 @@ global cell accounts;
       accounts~udict_set_builder(256, sender, begin_cell().store_coins(balance));
     }
     if (op == 1) { ;; Withdraw
-      ;; ~strdump("IN WITHDRAW");
+      ;; the vulnerabile code is in the next line. 
+      ;; Using dot will NOT remove the account entry meaning when user withdraws their entire balance
+      ;; they will be able to withdraw it again and again (until the contract balance is depleted)
       (_, slice old_balance_slice, int found?) = accounts.udict_delete_get?(256, sender);
+      ;; (slice old_balance_slice, int found?) = accounts~udict_delete_get?(256, sender);
       throw_unless(98, found?);
       int balance = old_balance_slice~load_coins();
       int withdraw_amount = in_msg_body~load_coins();

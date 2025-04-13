@@ -10,8 +10,7 @@ Play carefully! Used to test TON smart contracts in FunC and Tact for security v
 
 ## TODO
 
-- `raw_reserve`
-- Simple Messages
+- Simple Messages A -> B
 - Complex Messages
 - Gas monitoring
 

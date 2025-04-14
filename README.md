@@ -15,7 +15,6 @@ Play carefully! Used to test TON smart contracts in FunC and Tact for security v
 
 ## TODO
 
-- Bounced Messages A -> B -> bounce -> A
 - Complex Messages A -> B -> C -> A
 - accept_message()
 - throw()
@@ -23,6 +22,7 @@ Play carefully! Used to test TON smart contracts in FunC and Tact for security v
 - Continue Hack Challenges 
 - Jettons
 - Contract Upgrades
+- Local node deployment: pytvm
 
 ## Project structure
 

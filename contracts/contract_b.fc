@@ -36,7 +36,13 @@ global int call_counter;
     int op = in_msg_body~load_uint(32);
     int query_id = in_msg_body~load_uint(64);
 
-    call_counter += 1;
+    if (op == 0) {
+        call_counter += 1;
+    }
+    if (op == 1) {
+        ;; cause a bounce
+        throw(777);
+    }
     save_data();
 }
 

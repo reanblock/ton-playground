@@ -15,7 +15,7 @@ Play carefully! Used to test TON smart contracts in FunC and Tact for security v
 
 ## TODO
 
-- Bounced Messages
+- Bounced Messages A -> B -> bounce -> A
 - Complex Messages A -> B -> C -> A
 - accept_message()
 - throw()

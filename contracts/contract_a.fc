@@ -8,6 +8,35 @@ global slice contract_b;
     ds.end_parse();
 }
 
+() on_bounce(int sender, slice in_msg_body) impure inline {
+    {-
+        ## in_msg_full headers (already parsed) ->
+        - The `bounce` flag is set to 0 (indicating it's already bounced)
+        - The `bounced` flag is set to 1 (marking it as a bounced message)
+        - The destination becomes the original sender
+        - The sender becomes the original destination
+
+        ## in_msg_body content ->
+        - The first 32 bits of the original message body (typically the op code)
+    -}
+    in_msg_body~load_uint(32); ;; skip bounced op (4294967295)
+    int op = in_msg_body~load_uint(32); ;; op
+    int queryid = in_msg_body~load_uint(64); ;; queryid
+    int extra = in_msg_body~load_uint(64); ;; no data!??
+
+    if op == 0 {
+        ;; contractB should not bounce for op 0!
+    }
+
+    if op == 1 {
+        ;; contractB will boune messages back with opcode 1
+        ;; ~strdump("on_bounce: op == 1");
+        ;; ~dump(op);
+        ;; ~dump(queryid);
+        ;; ~dump(extra);
+    }
+}
+
 () recv_internal(int my_balance, int msg_value, cell in_msg_full, slice in_msg_body) impure {
     ;; contractA send message to contractB
     if (in_msg_body.slice_empty?()) { ;; ignore empty messages
@@ -16,26 +45,30 @@ global slice contract_b;
     slice cs = in_msg_full.begin_parse();
     int flags = cs~load_uint(4);
 
-    if (flags & 1) { ;; ignore all bounced messages
-        return ();
-    }
     slice sender_address = cs~load_msg_addr();
     (int wc, int sender) = parse_std_addr(sender_address);
     throw_unless(99, wc == 0);
+
+    if (flags & 1) { ;; handle bounced messages in on_bounce
+        return on_bounce(sender, in_msg_body);
+    }
+
     load_data();
     
     int op = in_msg_body~load_uint(32);
     int query_id = in_msg_body~load_uint(64);
     int amount = in_msg_body~load_coins();
+    int extra_data = 888888; ;; testing
 
-    if( op == 0 ) { ;; Simple Message Example A -> B
+    if( op <= 1) { ;; Simple Message Example A -> B
         var msg = begin_cell()
-                    .store_uint(0x18, 6)
+                    .store_uint(0x18, 6) ;; 011000 = bouncable
                     .store_slice(contract_b)
                     .store_coins(amount)
                     .store_uint(0, 1 + 4 + 4 + 64 + 32 + 1 + 1)
                     .store_uint(op, 32)             ;; add opcode to message body
                     .store_uint(query_id, 64)       ;; add query_id to message body
+                    .store_uint(extra_data, 64)     ;; add extra_data to message body
                 .end_cell();
         send_raw_message(msg, 64 + 2);
     }

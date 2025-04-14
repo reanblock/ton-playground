@@ -31,12 +31,12 @@ export class ContractA implements Contract {
         });
     }
 
-    async sendMessageAtoB(provider: ContractProvider, via: Sender, value: bigint, amount: bigint) {
+    async sendMessageAtoB(provider: ContractProvider, via: Sender, value: bigint, opcode: number, amount: bigint) {
         await provider.internal(via, {
             value, // the amount of TON coins
             sendMode: SendMode.PAY_GAS_SEPARATELY, // specifies that gas costs will be covered separately from the message value
             body: beginCell()
-                    .storeInt(0, 32) // opcode one for withdraw action
+                    .storeInt(opcode, 32) // opcode 
                     .storeInt(999999, 64) // queryid can be anything 
                     .storeCoins(amount) // amount requested to send from A -> B
                     .endCell()

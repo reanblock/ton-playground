@@ -16,7 +16,7 @@ contract SimpleCounterTact with Deployable {
 
     // try removing the line that increments the counter - the tests still pass until the contract is recompiled!
     receive(msg: Add) {
-        self.counter += msg.amount;
+        // self.counter += msg.amount;
 
         // Notify the caller that the receiver was executed and forward remaining value back
         self.notify("Cashback".asComment());
